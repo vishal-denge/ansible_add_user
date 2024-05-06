@@ -1,0 +1,37 @@
+---
+- name: Validate NGINX installation and user existence
+  hosts: all
+  become: yes  # Required if you need to check system-wide installations
+
+  tasks:
+    - name: Check if NGINX is installed
+      command: nginx -v
+      register: nginx_version
+      ignore_errors: yes
+
+    - name: Report NGINX installation status
+      debug:
+        msg: "NGINX is installed with version {{ nginx_version.stderr_lines[0] }}"
+      when: nginx_version.rc == 0
+
+    - name: Report NGINX not installed
+      debug:
+        msg: "NGINX is not installed."
+      when: nginx_version.rc != 0
+
+    - name: Check if 'myuser' exists
+      getent:
+        database: passwd
+        key: myuser
+      register: myuser_info
+
+    - name: Report 'myuser' existence
+      debug:
+        msg: "'myuser' exists on the system."
+      when: myuser_info.ansible_facts.getent_passwd['myuser'] is defined
+
+    - name: Report 'myuser' non-existence
+      debug:
+        msg: "'myuser' does not exist on the system."
+      when: myuser_info.ansible_facts.getent_passwd['myuser'] is not defined
+
