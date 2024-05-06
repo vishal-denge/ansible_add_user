@@ -1,0 +1,6 @@
+- name: Install and start NGINX on CentOS
+  hosts: webservers
+  become: yes
+  roles:
+    - nginx
+

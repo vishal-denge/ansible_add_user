@@ -1,0 +1,18 @@
+---
+# tasks file for nginx
+- name: Install EPEL Repository
+  yum:
+    name: epel-release
+    state: present
+
+- name: Install NGINX
+  yum:
+    name: nginx
+    state: present
+
+- name: Ensure NGINX is started and enabled
+  systemd:
+    name: nginx
+    state: started
+    enabled: yes
+
